@@ -209,8 +209,9 @@ function handleRegister() {
   const att1Name     = document.getElementById('att1-name').value.trim();
   const att2Title    = document.getElementById('att2-title').value;
   const att2Name     = document.getElementById('att2-name').value.trim();
-  // contribution column kept in DB for backwards compatibility but no longer collected
-  const contribution = '';
+  const bringingGift    = document.querySelector('input[name="bringing-gift"]:checked')?.value || 'no';
+  const giftDescription = document.getElementById('reg-gift-description')?.value.trim() || '';
+  const contribution    = bringingGift === 'yes' ? ('gift: ' + giftDescription) : '';
 
   // Events attending — wedding-only site, defaults to 'wedding'
   const eventsArr = Array.from(document.querySelectorAll('input[name="events"]:checked'))
@@ -338,6 +339,46 @@ function initPetals() {
     container.appendChild(petal);
   }
 }
+
+// ── PROGRAMME GATE ───────────────────────────────────────────────────────
+function handleViewProgramme() {
+  const errorEl = document.getElementById('prog-error');
+  errorEl.className = 'msg error';
+  errorEl.textContent = '';
+
+  const phone = normalizePhone(document.getElementById('prog-phone').value.trim());
+  if (!phone) {
+    errorEl.textContent = 'Please enter your phone number.';
+    errorEl.className = 'msg error show';
+    return;
+  }
+
+  const res = db.exec('SELECT name FROM guests WHERE phone = ?', [phone]);
+  if (!res.length || !res[0].values.length) {
+    errorEl.textContent = 'This phone number has not reserved a date. Please reserve first, then come back to view the programme.';
+    errorEl.className = 'msg error show';
+    return;
+  }
+
+  const name = res[0].values[0][0];
+  document.getElementById('prog-guest-name').textContent = name;
+  document.getElementById('programme-gate').style.display = 'none';
+  document.getElementById('programme-content').style.display = '';
+}
+
+function handleLockProgramme() {
+  document.getElementById('programme-content').style.display = 'none';
+  document.getElementById('programme-gate').style.display = '';
+  document.getElementById('prog-phone').value = '';
+}
+
+// ── GIFT TOGGLE ──────────────────────────────────────────────────────────
+document.addEventListener('change', function(e) {
+  if (e.target.name === 'bringing-gift') {
+    const wrap = document.getElementById('gift-description-wrap');
+    if (wrap) wrap.style.display = e.target.value === 'yes' ? '' : 'none';
+  }
+});
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────
 initPetals();

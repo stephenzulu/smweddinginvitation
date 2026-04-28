@@ -340,7 +340,35 @@
         </div>
       </div>
 
-      <div class="row g-4 justify-content-center mt-3">
+      <!-- Phone verification gate -->
+      <div id="programme-gate" class="row justify-content-center mt-3">
+        <div class="col-md-8 col-lg-6">
+          <div class="programme-card text-center">
+            <div style="font-size:42px;line-height:1;margin-bottom:12px;"><i class="bi bi-lock"></i></div>
+            <h3 class="programme-card-title" style="font-size:16px;letter-spacing:2px;">View Programme</h3>
+            <span class="programme-card-rule"></span>
+            <p class="font-alt fst-italic" style="font-size:13.5px;color:var(--body-text);max-width:400px;margin:0 auto 18px;">
+              The programme is available only to guests who have reserved their date. Please enter the phone number you used during reservation.
+            </p>
+            <div class="msg error mb-3" id="prog-error"></div>
+            <div class="input-group mb-3" style="max-width:320px;margin:0 auto;">
+              <span class="input-group-text"><i class="bi bi-phone"></i></span>
+              <input type="tel" class="form-control" id="prog-phone" placeholder="+260 XXX XXX XXX"/>
+            </div>
+            <button class="btn-wedding" onclick="handleViewProgramme()">View Programme</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Programme content (hidden until verified) -->
+      <div id="programme-content" class="row g-4 justify-content-center mt-3" style="display:none;">
+
+        <div class="col-12 text-center mb-2">
+          <p class="font-alt fst-italic" style="font-size:13.5px;color:var(--body-text);">
+            Welcome, <strong id="prog-guest-name">Guest</strong>. Here is the programme for the day.
+          </p>
+          <button class="btn-outline-sm" onclick="handleLockProgramme()"><i class="bi bi-lock me-1"></i>Lock</button>
+        </div>
 
         <!-- Marriage Ceremony Programme -->
         <div class="col-md-6 col-lg-5">
@@ -517,6 +545,23 @@
                       <option value="workmate">Workmate</option>
                     </select>
                   </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label d-block mb-1">Will you be bringing a gift?</label>
+                <div class="gift-toggle">
+                  <label class="side-opt">
+                    <input type="radio" name="bringing-gift" value="yes"/>
+                    <span class="side-card"><span class="side-icon">🎁</span>Yes</span>
+                  </label>
+                  <label class="side-opt">
+                    <input type="radio" name="bringing-gift" value="no" checked/>
+                    <span class="side-card"><span class="side-icon">🙏</span>No</span>
+                  </label>
+                </div>
+                <div id="gift-description-wrap" style="display:none;" class="mt-2">
+                  <input type="text" class="form-control form-control-sm" id="reg-gift-description" placeholder="Briefly describe the gift (optional)"/>
                 </div>
               </div>
 
