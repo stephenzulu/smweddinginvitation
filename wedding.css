@@ -653,6 +653,13 @@ a:hover { color: var(--gold-dark); }
   color: var(--body-text);
   margin-bottom: 14px;
 }
+.programme-venue {
+  font-family: 'PT Serif', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
 .programme-theme {
   font-family: 'PT Serif', serif;
   font-size: 14px;
