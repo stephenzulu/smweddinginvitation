@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stephen &amp; Mutinta — We Are Getting Married</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23faf6f0'/%3E%3Cpath d='M16,18 C12,18 9,21 9,25 C9,29 13,31 17,32 C21,33 24,35 24,39 C24,43 21,45 17,45 C14,45 11,43 10,40' fill='none' stroke='%23c99969' stroke-width='3.2' stroke-linecap='round'/%3E%3Cline x1='31' y1='18' x2='31' y2='46' stroke='%23c99969' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M31,18 L38,30 L45,18' fill='none' stroke='%23c99969' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cline x1='45' y1='18' x2='45' y2='46' stroke='%23c99969' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"/>
+
+<meta name="theme-color" content="#faf6f0"/>
+<meta name="apple-mobile-web-app-title" content="S &amp; M 2026"/>
+
+<!-- Fonts: PT Serif (display) + Questrial (body) + Sacramento (signature script logo) -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Questrial&family=Sacramento&display=swap" rel="stylesheet"/>
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<!-- Wedding Styles -->
+<link rel="stylesheet" href="wedding.css"/>
+</head>
+<body>
+
+<div class="petals" id="petals"></div>
+
+<div id="loading-overlay">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Initialising</div>
+</div>
+
+<!-- ══════════════════════════════════════
+  PAGE: LANDING — One-Page Scroll
+══════════════════════════════════════ -->
+<div class="page active" id="page-landing">
+
+  <!-- ═════ FIXED TOP NAVBAR — script logo center, links flanking ═════ -->
+  <header class="dahlia-nav fixed-top" id="dahlia-nav">
+    <div class="container-fluid px-3 px-lg-4">
+      <div class="d-flex align-items-center justify-content-between" style="height:78px;gap:16px;">
+
+        <!-- Left links (desktop) -->
+        <nav class="dn-links d-none d-lg-flex align-items-center" style="flex:1;justify-content:flex-end;">
+          <a href="#the-couple" class="dn-link active">The Couple</a>
+          <a href="#the-wedding-event" class="dn-link">Event</a>
+        </nav>
+
+        <!-- Centered script logo -->
+        <a href="#hero" class="dn-logo">
+          We <span class="logo-tiny">are</span>
+          <svg class="logo-mini-leaf" width="22" height="14" viewBox="0 0 22 14" aria-hidden="true">
+            <g fill="#9ab09a" opacity=".75">
+              <path d="M2,7 Q5,2 9,7 Q5,12 2,7 Z"/>
+              <path d="M9,7 Q12,2 16,7 Q12,12 9,7 Z"/>
+              <path d="M16,7 Q19,2 21,7 Q19,12 16,7 Z"/>
+            </g>
+          </svg>
+          getting <em style="font-style:italic;">Married</em>
+        </a>
+
+        <!-- Right links (desktop) -->
+        <nav class="dn-links d-none d-lg-flex align-items-center" style="flex:1;justify-content:flex-start;">
+          <a href="#dress-code" class="dn-link">Dress Code</a>
+          <a href="#rsvp-section" class="dn-link">RSVP</a>
+        </nav>
+
+        <button class="dn-toggler d-lg-none" id="dn-toggler" aria-label="Menu" onclick="toggleNav()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile dropdown -->
+    <div class="dn-mobile" id="dn-mobile">
+      <a href="#the-couple" onclick="closeNav()">The Couple</a>
+      <a href="#the-wedding-event" onclick="closeNav()">Event</a>
+      <a href="#dress-code" onclick="closeNav()">Dress Code</a>
+      <a href="#rsvp-section" onclick="closeNav()">RSVP</a>
+    </div>
+  </header>
+
+  <!-- ═════ HERO — invitation card with hexagonal photo ═════ -->
+  <section id="hero" class="dahlia-hero">
+    <div class="hero-container">
+      <div class="hero-card">
+
+        <!-- Two-laurel divider -->
+        <div class="laurel-divider">
+          <svg viewBox="0 0 90 14" aria-hidden="true">
+            <g fill="#9ab09a" opacity=".75">
+              <path d="M30,7 Q34,2 38,7 Q34,12 30,7 Z"/>
+              <path d="M38,7 Q42,2 46,7 Q42,12 38,7 Z"/>
+              <path d="M46,7 Q50,2 54,7 Q50,12 46,7 Z"/>
+              <path d="M54,7 Q58,2 62,7 Q58,12 54,7 Z"/>
+            </g>
+            <path d="M2,7 L26,7 M64,7 L88,7" stroke="#c0c8c0" stroke-width=".7" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Hexagonal photo with painted brushstroke backdrop -->
+        <div class="couple-photo-hex">
+
+          <!-- Brushstroke backdrop -->
+          <svg class="brush" viewBox="0 0 215 235" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <filter id="rough" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/>
+                <feDisplacementMap in="SourceGraphic" scale="3"/>
+              </filter>
+            </defs>
+            <g filter="url(#rough)" fill="#aac0c0" opacity=".55">
+              <path d="M30,30 C20,55 18,90 25,130 C32,165 50,200 95,205 C140,210 175,180 185,140 C195,100 188,60 165,40 C140,18 100,15 60,20 C45,22 35,25 30,30 Z"/>
+            </g>
+            <g fill="#aac0c0" opacity=".4">
+              <path d="M40,40 C32,65 30,95 38,128 C46,158 65,188 100,190 C135,192 165,165 172,135 C179,105 173,72 155,55 C135,38 105,38 70,42 C55,42 45,40 40,40 Z"/>
+            </g>
+          </svg>
+
+          <!-- Hex frame with photo -->
+          <div class="hex-frame">
+            <div class="hex-img" id="hero-couple-photo">
+              <img src="img/hero.jpg" alt="Stephen and Mutinta" loading="eager"/>
+            </div>
+          </div>
+
+          <!-- Tiny scattered hearts -->
+          <div class="tiny-hearts" aria-hidden="true">
+            <span class="h1"><i class="bi bi-suit-heart-fill"></i></span>
+            <span class="h2"><i class="bi bi-suit-heart-fill"></i></span>
+            <span class="h3"><i class="bi bi-suit-heart-fill"></i></span>
+            <span class="h4"><i class="bi bi-suit-heart-fill"></i></span>
+            <span class="h5"><i class="bi bi-suit-heart-fill"></i></span>
+          </div>
+        </div>
+
+        <!-- Couple names with ampersand ornament -->
+        <div class="couple-names-row">
+          <h2>Stephen</h2>
+          <span class="couple-amp-orn" aria-label="and">
+            <svg viewBox="0 0 38 28" aria-hidden="true">
+              <g fill="none" stroke="#c99969" stroke-width="1" stroke-linecap="round">
+                <path d="M4,14 Q9,8 14,14 Q9,20 4,14 Z" fill="#c99969" opacity=".55"/>
+                <path d="M24,14 Q29,8 34,14 Q29,20 24,14 Z" fill="#c99969" opacity=".55"/>
+                <path d="M14,14 L24,14" stroke-width="1.5"/>
+              </g>
+            </svg>
+          </span>
+          <h2>Mutinta</h2>
+        </div>
+
+        <p class="hero-tagline">
+           wedding ceremony &amp; reception.
+        </p>
+
+        <!-- Filigree ornament -->
+        <div class="filigree-divider">
+          <svg viewBox="0 0 100 18" aria-hidden="true">
+            <g fill="none" stroke="#c99969" stroke-width=".8" stroke-linecap="round">
+              <path d="M10,9 Q22,2 34,9 Q46,16 50,9 Q54,2 66,9 Q78,16 90,9"/>
+              <circle cx="50" cy="9" r="1.5" fill="#c99969"/>
+            </g>
+          </svg>
+        </div>
+
+        <p class="text-center mt-3" style="font-family:'PT Serif',serif;font-style:italic;font-size:13px;color:var(--gold-dark);letter-spacing:1.5px;">
+          5<sup>th</sup> September 2026 &nbsp;·&nbsp; Lusaka
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════ THE HAPPY COUPLE ═════ -->
+  <section class="wsection" id="the-couple">
+    <div class="container">
+      <div class="row mb-2">
+        <div class="col-12 text-center">
+          <h2 class="section-title">The Happy Couple</h2>
+         <span class="section-divider"><i></i></span>
+        </div>
+      </div>
+
+      <div class="couple-pair-row">
+
+        <!-- BRIDE block (left) -->
+        <div class="couple-block">
+          <div class="couple-block-img bride">
+            <img src="img/bride.jpg" alt="Mutinta Mumba" loading="lazy"/>
+            <span class="badge-role">The Bride</span>
+          </div>
+          <div class="couple-block-text">
+            <div class="couple-name-h">Mutinta Mumba</div>
+            <div class="couple-tag-i">I kind of have a thing for Him</div>
+            <span class="couple-rule"></span>
+            <p class="couple-bio">
+              I am just crazy about Stephen. He has a truly amazing heart. I am so incredibly blessed and excited
+              to spend everyday for the rest of my life with my best friend.
+            </p>
+          </div>
+        </div>
+
+        <!-- GROOM block (right) -->
+        <div class="couple-block">
+          <div class="couple-block-img groom">
+            <img src="img/groom.jpg" alt="Stephen Zulu" loading="lazy"/>
+            <span class="badge-role">The Groom</span>
+          </div>
+          <div class="couple-block-text">
+            <div class="couple-name-h">Stephen Zulu</div>
+            <div class="couple-tag-i">I kind of have a thing for Her</div>
+            <span class="couple-rule"></span>
+            <p class="couple-bio">
+              Mutinta means so much to me and I can't believe she is actually going to marry me. I'm so excited
+              to spend the rest of my life with her. Mutinta is perfect for me.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════ THE WEDDING EVENT — full-bleed dark photo, white cards ═════ -->
+  <section class="wsection-hero" id="the-wedding-event">
+    <div class="container position-relative" style="z-index:2;">
+      <div class="row mb-5">
+        <div class="col-12 text-center">
+          <h2 class="section-title">The Wedding Event</h2>
+         <span class="section-divider divider-light"><i></i></span>
+        </div>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+
+        <div class="col-md-7 col-lg-6">
+          <div class="event-card">
+            <h3 class="event-card-title">The Wedding</h3>
+            <span class="event-card-rule"></span>
+            <p class="event-card-sub">
+              A sacred union before God, followed by an evening of celebration with family
+              and dearest friends. We can't wait to share this day with you.
+            </p>
+
+            <div class="event-info-row">
+              <span class="event-icon"><i class="bi bi-calendar-event"></i></span>
+              <div>
+                <div class="event-info-value">Saturday &middot; 5<sup>th</sup> September 2026</div>
+                <div class="event-info-sub">Ceremony 9:00 AM &nbsp;&middot;&nbsp; Reception from 1:00 PM</div>
+              </div>
+            </div>
+
+            <div class="event-info-row">
+              <span class="event-icon"><i class="bi bi-geo-alt"></i></span>
+              <div>
+                <div class="event-info-value">St. Patrick's Catholic Church</div>
+                <div class="event-info-sub">Lusaka, Zambia</div>
+              </div>
+            </div>
+
+            <div class="event-card-actions">
+              <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Lusaka,Zambia" target="_blank" rel="noopener">How to get there</a>
+              <a href="https://www.google.com/maps/place/Lusaka,+Zambia/@-15.4167,28.2833,13z" target="_blank" rel="noopener" class="link-only">View Map</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════ COUNTDOWN STRIP — wedding day ═════ -->
+  <section class="dh-countdown-strip">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h2 class="section-title">Counting Down</h2>
+          <span class="section-divider"><i></i></span>
+        </div>
+      </div>
+
+      <!-- Wedding countdown -->
+      <div class="row mt-4">
+        <div class="col-12 text-center">
+          <div class="countdown-event-label">The Wedding &middot; 5<sup>th</sup> September 2026</div>
+        </div>
+        <div class="col-12">
+          <div class="countdown-wrap" id="countdown-wrap-wedding">
+            <div class="countdown-box"><div class="countdown-num" id="cd-w-days">--</div><div class="countdown-label">Days</div></div>
+            <div class="countdown-box"><div class="countdown-num" id="cd-w-hours">--</div><div class="countdown-label">Hours</div></div>
+            <div class="countdown-box"><div class="countdown-num" id="cd-w-mins">--</div><div class="countdown-label">Minutes</div></div>
+            <div class="countdown-box"><div class="countdown-num" id="cd-w-secs">--</div><div class="countdown-label">Seconds</div></div>
+          </div>
+          <div class="countdown-passed" id="cd-w-passed" style="display:none;">
+            <i class="bi bi-suit-heart-fill me-2"></i>Thank you for celebrating with us!
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════ DRESS CODE ═════ -->
+  <section class="wsection" id="dress-code">
+    <div class="container">
+      <div class="row mb-2">
+        <div class="col-12 text-center">
+          <h2 class="section-title">Dress Code</h2>
+          <span class="section-eyebrow d-block mt-2">Look your finest — elegant / formal attire.</span>
+          <span class="section-divider"><i></i></span>
+        </div>
+      </div>
+      <div class="row justify-content-center g-3 mt-4">
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="dress-card">
+            <span class="dress-icon">🤵</span>
+            <span class="dress-title">Gentlemen</span>
+            <span class="dress-desc">Suit or traditional formal wear</span>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="dress-card">
+            <span class="dress-icon">👗</span>
+            <span class="dress-title">Ladies</span>
+            <span class="dress-desc">Evening gowns or elegant dresses</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════ RSVP / RESERVE A DATE ═════ -->
+  <section class="wsection" id="rsvp-section">
+    <div class="container">
+      <div class="row mb-2">
+        <div class="col-12 text-center">
+          <h2 class="section-title">Come and Celebrate With Us</h2>
+         <span class="section-divider"><i></i></span>
+          <p class="font-alt fst-italic mt-3" style="font-size:13.5px;color:var(--body-text);max-width:540px;margin:14px auto 0;">
+            Kindly reserve your date below.
+          </p>
+        </div>
+      </div>
+
+      <div class="row justify-content-center mt-4">
+        <div class="col-md-10 col-lg-8">
+
+          <div class="rsvp-card">
+
+            <!-- ══ REGISTER PANE ══ -->
+            <div class="rsvp-pane active" id="rsvp-pane-register">
+              <div class="msg error mb-3" id="reg-error"></div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Phone Number <span class="req">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                    <input type="tel" class="form-control" id="reg-phone" placeholder="+260 XXX XXX XXX" required/>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email Address (Optional)</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control" id="reg-email" placeholder="your@email.com" />
+                  </div>
+                </div>
+              </div>
+
+              <label class="form-label d-block mb-1">Attending Guests</label>
+              <div class="attendees-block mb-3">
+                <span class="att-heading">— Enter the names of both attendees —</span>
+                <div class="attendee-row">
+                  <div>
+                    <label class="form-label">Title</label>
+                    <select class="form-select form-select-sm" id="att1-title">
+                      <option value="Mr">Mr</option><option value="Mrs">Mrs</option>
+                      <option value="Miss">Miss</option><option value="Dr">Dr</option><option value="Prof">Prof</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label">First Attendee's Name</label>
+                    <input type="text" class="form-control form-control-sm" id="att1-name" placeholder="Full name"/>
+                  </div>
+                </div>
+                <div class="attendee-row">
+                  <div>
+                    <label class="form-label">Title</label>
+                    <select class="form-select form-select-sm" id="att2-title">
+                      <option value="Mr">Mr</option><option value="Mrs">Mrs</option>
+                      <option value="Miss" selected>Miss</option><option value="Dr">Dr</option><option value="Prof">Prof</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label">Second Attendee's Name</label>
+                    <input type="text" class="form-control form-control-sm" id="att2-name" placeholder="Full name"/>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Wedding-only: events default handled in JS -->
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Related To</label>
+                  <div class="relation-side">
+                    <label class="side-opt">
+                      <input type="radio" name="relation-side" value="bride" checked/>
+                      <span class="side-card"><span class="side-icon">👰</span>Bride's Side</span>
+                    </label>
+                    <label class="side-opt">
+                      <input type="radio" name="relation-side" value="groom"/>
+                      <span class="side-card"><span class="side-icon">🤵</span>Groom's Side</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Relationship</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-people"></i></span>
+                    <select class="form-select" id="reg-relation-type">
+                      <option value="family">Family</option>
+                      <option value="friend">Friend</option>
+                      <option value="workmate">Workmate</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <button class="btn-wedding" onclick="handleRegister()">
+                  Reserve
+                </button>
+              </div>
+            </div>
+
+            <!-- ══ SUCCESS PANE (post-reservation) ══ -->
+            <div class="rsvp-pane" id="rsvp-pane-success">
+              <div class="text-center">
+                <div style="font-size:54px;line-height:1;margin-bottom:8px;">🎉</div>
+                <h3 class="font-alt" style="font-weight:700;color:var(--ink);letter-spacing:2px;text-transform:uppercase;font-size:18px;">Date Reserved</h3>
+                <span class="section-divider mt-2"><i></i></span>
+                <p class="font-alt fst-italic mb-2 mt-3" style="color:var(--body-text);font-size:14px;">
+                  Thank you — your date has been reserved. A confirmation has been sent to your email address.
+                </p>
+                <div id="email-status-box"></div>
+                <p class="font-alt fst-italic mt-3 mb-0" style="color:var(--body-text);font-size:13px;">
+                  We can't wait to celebrate with you on 5<sup>th</sup> September 2026.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════ FOOTER — dark band with photo BG ═════ -->
+  <footer class="dahlia-footer" id="footer">
+    <div class="container text-center position-relative" style="z-index:2;">
+      <div class="footer-wait">We Can't Wait to See You!</div>
+      <span class="section-divider divider-light mt-2 mb-3"><i></i></span>
+      <p class="footer-date">5<sup>th</sup> September 2026 &nbsp;·&nbsp; Lusaka, Zambia</p>
+      <p class="footer-tag mt-3">— Stephen Zulu &amp; Mutinta Mumba · With Love &amp; Gratitude · 2026 —</p>
+    </div>
+  </footer>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+  PAGE: GUEST PORTAL — Personalized post-login view
+══════════════════════════════════════════════════════════════════ -->
+<div class="page fullpage" id="page-details">
+  <div class="details-page">
+
+    <nav class="navbar details-navbar sticky-top">
+      <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <span class="navbar-brand">Stephen &amp; Mutinta</span>
+          <div class="d-flex align-items-center gap-3">
+            <span class="nav-user-text d-none d-sm-block" id="nav-user-name">Welcome, Guest</span>
+            <button class="btn-signout" onclick="handleLogout()">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Welcome hero -->
+    <section class="wsection-hero" style="min-height:auto;padding:80px 16px 60px;">
+      <div class="container position-relative" style="z-index:2;">
+        <div class="row justify-content-center">
+          <div class="col-md-10 col-lg-9 col-xl-8">
+            <div class="invitation-card">
+              <span class="invitation-eyebrow">— Welcome, honoured guest —</span>
+              <h1 class="invitation-names" style="font-size:30px;">
+                <span id="detail-guest-name">Guest Name</span>
+              </h1>
+              <span class="section-divider mt-3"><i></i></span>
+              <p class="invitation-date">You are invited · 5<sup>th</sup> September 2026 · Lusaka</p>
+
+              <div class="text-center mt-3">
+                <span class="contribution-badge" id="detail-contribution-badge">✓ Reserved</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Your Party -->
+    <section class="wsection wsection-cream">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 text-center">
+            <h2 class="section-title">Your Party</h2>
+            <span class="section-eyebrow d-block mt-2">Reserved in your name.</span>
+            <span class="section-divider"><i></i></span>
+          </div>
+        </div>
+        <div class="row justify-content-center mt-4">
+          <div class="col-md-10 col-lg-8">
+            <div class="bg-white p-4 p-md-5" style="border:1px solid var(--hairline);">
+              <div class="att-display-row">
+                <div class="att-avatar" id="att1-avatar">🤵</div>
+                <div>
+                  <span class="att-tag" id="detail-att1-title">Mr</span>
+                  <div class="att-full-name mt-1" id="detail-att1-name">—</div>
+                </div>
+              </div>
+              <div class="att-display-row">
+                <div class="att-avatar" id="att2-avatar">👗</div>
+                <div>
+                  <span class="att-tag" id="detail-att2-title">Miss</span>
+                  <div class="att-full-name mt-1" id="detail-att2-name">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick links back to scroll -->
+    <section class="wsection">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 text-center">
+            <h2 class="section-title">Wedding Details</h2>
+            <span class="section-eyebrow d-block mt-2">Explore the full invitation.</span>
+            <span class="section-divider"><i></i></span>
+          </div>
+        </div>
+        <div class="row g-3 justify-content-center mt-4">
+          <div class="col-6 col-md-4 col-lg-3">
+            <a class="dress-card text-decoration-none d-block" href="javascript:void(0)" onclick="goToSection('the-couple')">
+              <span class="dress-icon">💑</span>
+              <span class="dress-title">The Couple</span>
+              <span class="dress-desc">About Stephen &amp; Mutinta</span>
+            </a>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3">
+            <a class="dress-card text-decoration-none d-block" href="javascript:void(0)" onclick="goToSection('the-wedding-event')">
+              <span class="dress-icon">💒</span>
+              <span class="dress-title">Wedding Day</span>
+              <span class="dress-desc">Date, venue &amp; details</span>
+            </a>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3">
+            <a class="dress-card text-decoration-none d-block" href="javascript:void(0)" onclick="goToSection('dress-code')">
+              <span class="dress-icon">👔</span>
+              <span class="dress-title">Dress Code</span>
+              <span class="dress-desc">Elegant / formal</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="details-footer">
+      <span class="section-divider mb-3" style="margin:0 auto 18px;"><i></i></span>
+      <div class="footer-names">Stephen Zulu &amp; Mutinta Mumba</div>
+      <div class="footer-tag">— With Love &amp; Gratitude · 2026 —</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- SQL.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+<!-- Wedding Logic -->
+<script src="wedding.js"></script>
+
+<!-- One-page scroll behaviour, RSVP tabs, countdown, nav scroll-spy -->
+<script>
+(function(){
+
+  /* ── COUNTDOWN (Wedding only) ── */
+  var WEDDING_DATE = new Date('2026-09-05T09:00:00+02:00').getTime();
+
+  function paintCountdown(){
+    var diff = WEDDING_DATE - Date.now();
+    var wrap   = document.getElementById('countdown-wrap-wedding');
+    var passed = document.getElementById('cd-w-passed');
+
+    if (diff <= 0) {
+      if (wrap)   wrap.style.display = 'none';
+      if (passed) passed.style.display = 'block';
+      return;
+    }
+
+    var days = Math.floor(diff / 86400000);
+    var hrs  = Math.floor((diff % 86400000) / 3600000);
+    var mins = Math.floor((diff % 3600000) / 60000);
+    var secs = Math.floor((diff % 60000) / 1000);
+    var d = document.getElementById('cd-w-days');
+    var h = document.getElementById('cd-w-hours');
+    var m = document.getElementById('cd-w-mins');
+    var s = document.getElementById('cd-w-secs');
+    if (d) d.textContent = String(days).padStart(2,'0');
+    if (h) h.textContent = String(hrs).padStart(2,'0');
+    if (m) m.textContent = String(mins).padStart(2,'0');
+    if (s) s.textContent = String(secs).padStart(2,'0');
+  }
+
+  paintCountdown(); setInterval(paintCountdown, 1000);
+
+  /* ── MOBILE NAV TOGGLE ── */
+  window.toggleNav = function(){
+    document.getElementById('dn-mobile')?.classList.toggle('open');
+    document.getElementById('dn-toggler')?.classList.toggle('active');
+  };
+  window.closeNav = function(){
+    document.getElementById('dn-mobile')?.classList.remove('open');
+    document.getElementById('dn-toggler')?.classList.remove('active');
+  };
+
+  /* ── RSVP TAB SWITCHER ── */
+  window.switchRsvpTab = function(name){
+    document.querySelectorAll('.rsvp-tab').forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-tab') === name);
+    });
+    document.querySelectorAll('.rsvp-pane').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('rsvp-pane-' + name)?.classList.add('active');
+
+    // hide register tab when showing success
+    if (name === 'success') {
+      document.querySelector('.rsvp-tabs')?.classList.add('rsvp-tabs-hidden');
+    } else {
+      document.querySelector('.rsvp-tabs')?.classList.remove('rsvp-tabs-hidden');
+    }
+
+    // smooth-scroll to the rsvp section
+    var sec = document.getElementById('rsvp-section');
+    if (sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
+  };
+
+  /* ── INTERCEPT showPage() FOR REMOVED PAGES ── */
+  var _origShowPage = window.showPage;
+  window.showPage = function(id){
+    if (id === 'page-success') { window.switchRsvpTab('success'); return; }
+    if (id === 'page-register') { window.switchRsvpTab('register'); return; }
+    if (id === 'page-login')    { window.switchRsvpTab('login');    return; }
+    if (typeof _origShowPage === 'function') return _origShowPage(id);
+  };
+
+  /* ── GO TO SECTION (from portal page back to landing) ── */
+  window.goToSection = function(id){
+    window.showPage('page-landing');
+    setTimeout(function(){
+      document.getElementById(id)?.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 60);
+  };
+
+  /* ── NAV SCROLL-SPY ── */
+  function updateNavActive(){
+    var sections = ['the-couple','the-wedding-event','dress-code','rsvp-section'];
+    var fromTop = window.scrollY + 130;
+    var current = null;
+    sections.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el && el.offsetTop <= fromTop) current = id;
+    });
+    document.querySelectorAll('.dn-link').forEach(function(a){
+      var href = a.getAttribute('href') || '';
+      a.classList.toggle('active', href === '#' + current);
+    });
+    var nav = document.getElementById('dahlia-nav');
+    if (nav) nav.classList.toggle('scrolled', window.scrollY > 60);
+  }
+  window.addEventListener('scroll', updateNavActive, { passive: true });
+  document.addEventListener('DOMContentLoaded', updateNavActive);
+
+  /* ── SMOOTH ANCHOR SCROLLING with navbar offset ── */
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (href.length < 2) return;
+    var target = document.getElementById(href.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    var offset = 80;
+    var y = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    if (document.getElementById('dn-mobile')?.classList.contains('open')) closeNav();
+  });
+
+})();
+</script>
+
+</body>
+</html>

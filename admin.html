@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Stephen &amp; Mutinta Wedding</title>
+<meta name="robots" content="noindex, nofollow"/>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%236d8a91'/%3E%3Cpath d='M16,18 C12,18 9,21 9,25 C9,29 13,31 17,32 C21,33 24,35 24,39 C24,43 21,45 17,45 C14,45 11,43 10,40' fill='none' stroke='%23ffffff' stroke-width='3.2' stroke-linecap='round'/%3E%3Cline x1='31' y1='18' x2='31' y2='46' stroke='%23ffffff' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M31,18 L38,30 L45,18' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cline x1='45' y1='18' x2='45' y2='46' stroke='%23ffffff' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"/>
+<meta name="theme-color" content="#ffffff"/>
+
+<!-- Fonts: PT Serif + Questrial (matches Dahlia demo) -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Questrial&display=swap" rel="stylesheet"/>
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<!-- Shared Wedding CSS -->
+<link rel="stylesheet" href="wedding.css"/>
+
+<style>
+body { background: var(--bone); }
+
+/* View system — replaces .page for this standalone file */
+.view { display: none; }
+.view.active { display: block; }
+
+/* Login view — centred card on photo background */
+#view-login {
+  display: none;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background-color: var(--bone);
+  /* Hosted background image (Unsplash, free for commercial use).
+     Cream overlay on top keeps the login card readable.
+     SVG gradient is a fallback if the network fails. */
+  background-image:
+    linear-gradient(rgba(245,239,230,.78), rgba(245,239,230,.85)),
+    url("https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1600&q=80"),
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3ClinearGradient id='abg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e8ddc8'/%3E%3Cstop offset='.5' stop-color='%23c9b89a'/%3E%3Cstop offset='1' stop-color='%23a08770'/%3E%3C/linearGradient%3E%3CradialGradient id='aglow' cx='.5' cy='.4' r='.7'%3E%3Cstop offset='0' stop-color='%23f5dcc1' stop-opacity='.6'/%3E%3Cstop offset='1' stop-color='%23000' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='1200' height='800' fill='url(%23abg)'/%3E%3Crect width='1200' height='800' fill='url(%23aglow)'/%3E%3C/svg%3E");
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+}
+#view-login.active { display: flex; }
+
+/* Admin login card */
+.admin-login-card {
+  width: 100%; max-width: 440px;
+  background: var(--paper);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(45,42,38,.12);
+  position: relative;
+}
+.admin-login-card::before,
+.admin-login-card::after {
+  content: '';
+  position: absolute;
+  width: 60px; height: 60px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M2,2 Q2,30 2,58 M2,2 Q30,2 58,2' fill='none' stroke='%236d8a91' stroke-width='1' opacity='.5'/%3E%3Cpath d='M8,8 Q8,24 8,40 M8,8 Q24,8 40,8' fill='none' stroke='%23a59279' stroke-width='.6' opacity='.4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 2;
+}
+.admin-login-card::before { top: 12px; left: 12px; }
+.admin-login-card::after  { bottom: 12px; right: 12px; transform: rotate(180deg); }
+
+.alc-header {
+  background: var(--cream);
+  padding: 40px 36px 28px;
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid var(--hairline);
+}
+.alc-eyebrow {
+  font-family: 'PT Serif', serif;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 2.5px;
+  color: var(--secondary-dark);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 10px;
+}
+.alc-title {
+  font-family: 'PT Serif', serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: 1px;
+}
+.alc-body { padding: 32px 36px; background: var(--paper); }
+
+/* Admin panel */
+#view-panel { min-height: 100vh; background: var(--bone); }
+
+/* Top bar */
+.admin-topbar {
+  background: var(--paper);
+  border-bottom: 1px solid var(--hairline);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+}
+.tb-brand {
+  font-family: 'PT Serif', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tb-sub {
+  font-family: 'PT Serif', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Panel section title */
+.panel-section-title {
+  font-family: 'PT Serif', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Search bar */
+.admin-search {
+  background: var(--paper);
+  border: 1.5px solid var(--hairline);
+  border-radius: 3px;
+  padding: 10px 14px;
+  color: var(--ink);
+  font-family: 'Questrial', sans-serif;
+  font-size: 14px;
+  width: 100%;
+  max-width: 340px;
+  outline: none;
+  transition: border-color .2s;
+}
+.admin-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(109,138,145,.12); }
+.admin-search::placeholder { color: rgba(132,146,166,.55); font-style: italic; }
+
+/* Action buttons in topbar */
+.btn-tb {
+  font-family: 'Questrial', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 3px;
+  border: 1px solid var(--hairline);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all .2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-tb:hover { background: var(--bone); border-color: var(--primary); color: var(--primary); }
+.btn-tb-danger { color: var(--error); border-color: rgba(165,80,80,.4); }
+.btn-tb-danger:hover { background: rgba(165,80,80,.08); border-color: var(--error); color: var(--error); }
+.btn-tb-warn { color: var(--secondary-dark); border-color: rgba(165,146,121,.5); }
+.btn-tb-warn:hover { background: rgba(165,146,121,.1); border-color: var(--secondary); color: var(--secondary-dark); }
+
+@media (max-width:576px) {
+  .alc-body, .alc-header { padding: 28px 24px; }
+  .admin-topbar { padding: 12px 16px; }
+  .alc-title { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading overlay (for SQL.js init) -->
+<div id="loading-overlay">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Loading</div>
+</div>
+
+<!-- ══════════════════════════════════════
+  VIEW: ADMIN LOGIN
+══════════════════════════════════════ -->
+<div class="view active" id="view-login">
+  <div class="admin-login-card">
+    <div class="alc-header">
+      <span class="alc-eyebrow">— Administration Portal —</span>
+      <div class="alc-title">Admin Login</div>
+      <span class="section-divider divider-secondary mt-2"><i></i></span>
+    </div>
+    <div class="alc-body">
+      <div class="msg error mb-3" id="admin-login-error"></div>
+      <div class="mb-4">
+        <label class="form-label">Admin Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+          <input type="password" class="form-control" id="admin-password"
+            placeholder="Enter admin password"
+            onkeydown="if(event.key==='Enter') handleAdminLogin()"/>
+          <button class="input-group-text" style="cursor:pointer;"
+            onclick="togglePwd('admin-password',this)">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+      </div>
+      <div class="d-flex flex-column gap-2">
+        <button class="btn-wedding" onclick="handleAdminLogin()">
+          <i class="bi bi-arrow-right-circle me-2"></i>Access Admin Panel
+        </button>
+        <a href="index.html" class="btn-wedding-outline text-decoration-none text-center">
+          <i class="bi bi-arrow-left me-2"></i>Back to Invitation
+        </a>
+      </div>
+      <p class="text-center fst-italic mt-3 font-alt" style="font-size:13px;color:var(--muted);">
+        Password: <strong style="color:var(--primary);">admin2025</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  VIEW: ADMIN PANEL
+══════════════════════════════════════ -->
+<div class="view" id="view-panel">
+
+  <div class="admin-topbar">
+    <div class="tb-brand">
+      <i class="bi bi-shield-fill-check" style="color:var(--primary);font-size:22px;"></i>
+      <div>
+        <div>Wedding Admin</div>
+        <div class="tb-sub">Stephen &amp; Mutinta · 5 Sep 2026</div>
+      </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn-tb" onclick="renderAdminPanel()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+      </button>
+      <button class="btn-tb" onclick="exportCSV()">
+        <i class="bi bi-download me-1"></i>Export CSV
+      </button>
+      <button class="btn-tb btn-tb-danger" onclick="clearAllData()">
+        <i class="bi bi-trash me-1"></i>Clear Data
+      </button>
+      <button class="btn-tb btn-tb-warn" onclick="handleLogout()">
+        <i class="bi bi-box-arrow-left me-1"></i>Log Out
+      </button>
+      <a href="index.html" class="btn-tb">
+        <i class="bi bi-house me-1"></i>Invitation
+      </a>
+    </div>
+  </div>
+
+  <div class="container-fluid p-4">
+
+    <div class="db-status-bar mb-4">
+      <div class="db-dot"></div>
+      <span id="db-status-text">SQLite database active · Stored in localStorage</span>
+    </div>
+
+    <div class="row g-3 mb-4" id="admin-stats"></div>
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3 flex-wrap">
+      <h6 class="panel-section-title">
+        <i class="bi bi-people-fill me-2" style="color:var(--primary);font-size:18px;"></i>Guest Registry
+      </h6>
+      <input type="text" class="admin-search" id="table-search"
+        placeholder="Search by name, phone or email…"
+        oninput="filterTable(this.value)"/>
+    </div>
+
+    <div class="admin-table-card">
+      <div class="table-responsive">
+        <table class="table table-hover" style="background:transparent;margin:0;">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th><i class="bi bi-phone me-1"></i>Phone</th>
+              <th><i class="bi bi-envelope me-1"></i>Email</th>
+              <th>Attendee 1</th>
+              <th>Attendee 2</th>
+              <th><i class="bi bi-people me-1"></i>Relation</th>
+              <th><i class="bi bi-calendar me-1"></i>Registered</th>
+              <th><i class="bi bi-gear me-1"></i>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- SQL.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+<!-- Admin Logic -->
+<script src="admin.js"></script>
+<script>
+  // Client-side table search
+  function filterTable(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('#admin-tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>
