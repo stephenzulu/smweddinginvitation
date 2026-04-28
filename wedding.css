@@ -613,6 +613,103 @@ a:hover { color: var(--gold-dark); }
 .event-card-actions a.link-only:hover { background: transparent; color: var(--gold); border-bottom-color: var(--gold); }
 
 /* ══════════════════════════════════════════════════════════════════
+   PROGRAMME SECTION
+   ══════════════════════════════════════════════════════════════════ */
+.programme-card {
+  background: #fdfaf2;
+  padding: 38px 28px 40px;
+  text-align: center;
+  box-shadow: 0 14px 36px rgba(0,0,0,.08);
+  height: 100%;
+}
+.programme-card-title {
+  font-family: 'PT Serif', serif;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--ink);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.programme-card-rule {
+  display: block;
+  width: 40px; height: 2px;
+  background: var(--gold);
+  margin: 0 auto 16px;
+}
+.programme-couple-names {
+  font-family: 'PT Serif', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.programme-meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-family: 'Questrial', sans-serif;
+  font-size: 14px;
+  color: var(--body-text);
+  margin-bottom: 14px;
+}
+.programme-theme {
+  font-family: 'PT Serif', serif;
+  font-size: 14px;
+  color: var(--gold-dark);
+  margin-bottom: 20px;
+}
+.programme-heading {
+  text-align: center;
+  margin-bottom: 16px;
+  position: relative;
+}
+.programme-heading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 1px;
+  background: var(--hairline);
+}
+.programme-heading span {
+  position: relative;
+  background: #fdfaf2;
+  padding: 0 14px;
+  font-family: 'PT Serif', serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.programme-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+.programme-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--hairline);
+  font-family: 'Questrial', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+}
+.programme-list li:last-child { border-bottom: none; }
+.prog-item { flex: 1; }
+.prog-time {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--body-text);
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════
    COUNTDOWN STRIP
    ══════════════════════════════════════════════════════════════════ */
 .dh-countdown-strip {
@@ -1569,6 +1666,8 @@ a:hover { color: var(--gold-dark); }
 
   /* Event cards even tighter */
   .event-card { padding: 26px 18px 28px; }
+  .programme-card { padding: 26px 16px 28px; }
+  .programme-meta { flex-direction: column; gap: 4px; }
 
   /* RSVP */
   .rsvp-card { padding: 26px 16px 26px; }
