@@ -213,10 +213,7 @@ function handleRegister() {
   const giftDescription = document.getElementById('reg-gift-description')?.value.trim() || '';
   const contribution    = bringingGift === 'yes' ? ('gift: ' + giftDescription) : '';
 
-  // Events attending — wedding-only site, defaults to 'wedding'
-  const eventsArr = Array.from(document.querySelectorAll('input[name="events"]:checked'))
-    .map(el => el.value);
-  const events = eventsArr.length ? eventsArr.join(',') : 'wedding';
+  const events = 'wedding';
 
   const relationSide = document.querySelector('input[name="relation-side"]:checked')?.value || 'bride';
   const relationType = document.getElementById('reg-relation-type').value || 'friend';
@@ -228,7 +225,6 @@ function handleRegister() {
   if (!EMAIL_RE.test(email))   return showError('reg-error', 'Please enter a valid email address (e.g. you@example.com).');
   if (!att1Name)               return showError('reg-error', 'Please enter the name of the first attendee.');
   if (!att2Name)               return showError('reg-error', 'Please enter the name of the second attendee.');
-  if (!eventsArr.length)       return showError('reg-error', 'Please select at least one event you will attend.');
 
   // Derive the contact-person "name" from Attendee 1 (Title + Name)
   // — used for greetings, emails, admin display.
