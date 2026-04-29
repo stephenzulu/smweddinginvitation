@@ -50,8 +50,10 @@ function getAllRows() {
 
 function findByPhone(phone) {
   const rows = getAllRows();
+  var normalizedPhone = String(phone).replace(/[\s\-\(\)\+]/g, '');
   for (let i = 0; i < rows.length; i++) {
-    if (rows[i][2] === phone) {
+    var storedPhone = String(rows[i][2]).replace(/[\s\-\(\)\+]/g, '');
+    if (storedPhone === normalizedPhone) {
       const obj = {};
       HEADERS.forEach((h, j) => obj[h] = rows[i][j]);
       obj._rowIndex = i + 2; // sheet row (1-indexed, skip header)
