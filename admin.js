@@ -6,8 +6,11 @@
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────
 // ⚠️ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE:
-const API_URL         = 'https://script.google.com/macros/s/AKfycbyVl8rRE9XivaIPOjoONLlr6YtSRn91LCJEtx5SBf3JaN32do2DF2KbMC3M1d-roUf1/exec';
-const ADMIN_PASSWORD  = 'admin2025';
+const API_URL           = 'https://script.google.com/macros/s/AKfycbyVl8rRE9XivaIPOjoONLlr6YtSRn91LCJEtx5SBf3JaN32do2DF2KbMC3M1d-roUf1/exec';
+const ADMIN_PASSWORD    = 'admin2025';
+const VIEWER_PASSWORD   = 'admin2026';
+
+let isAdmin = false;
 
 // ── API HELPER ──────────────────────────────────────────────────────────────
 async function apiCall(params) {
@@ -65,9 +68,16 @@ function showView(id) {
 function handleAdminLogin() {
   clearMsg('admin-login-error');
   const pwd = document.getElementById('admin-password').value.trim();
-  if (!pwd) return showError('admin-login-error', 'Please enter the admin password.');
-  if (pwd !== ADMIN_PASSWORD)
+  if (!pwd) return showError('admin-login-error', 'Please enter the password.');
+  if (pwd !== ADMIN_PASSWORD && pwd !== VIEWER_PASSWORD)
     return showError('admin-login-error', 'Incorrect password. Access denied.');
+
+  isAdmin = (pwd === ADMIN_PASSWORD);
+
+  // Show/hide admin-only buttons
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = isAdmin ? '' : 'none';
+  });
 
   document.getElementById('admin-password').value = '';
   showView('view-panel');
@@ -114,6 +124,14 @@ async function renderAdminPanel() {
         : `<span class="badge badge-bride px-2 py-1">👰 Bride's</span>`;
       const relTypeLabel = (r.relation_type || 'friend').charAt(0).toUpperCase() + (r.relation_type || 'friend').slice(1);
 
+      const deleteBtn = isAdmin
+        ? `<button class="btn btn-sm btn-outline-danger"
+            style="font-size:11px;white-space:nowrap;"
+            onclick="deleteGuest('${esc(r.phone)}')">
+            <i class="bi bi-trash"></i>
+          </button>`
+        : '';
+
       return `<tr>
         <td style="color:#555;">${i+1}</td>
         <td>${esc(r.phone)}</td>
@@ -122,13 +140,7 @@ async function renderAdminPanel() {
         <td style="white-space:nowrap;"><span style="color:var(--gold);font-size:11px;">${esc(r.att2_title)}</span> ${esc(r.att2_name)}</td>
         <td style="white-space:nowrap;">${sideBadge}<br><span style="font-size:11px;color:#888;font-style:italic;">${esc(relTypeLabel)}</span></td>
         <td style="color:#666;font-size:12px;">${d}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-danger"
-            style="font-size:11px;white-space:nowrap;"
-            onclick="deleteGuest('${esc(r.phone)}')">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
+        <td>${deleteBtn}</td>
       </tr>`;
     }).join('');
 

@@ -234,7 +234,7 @@ body { background: var(--bone); }
         </a>
       </div>
       <p class="text-center fst-italic mt-3 font-alt" style="font-size:13px;color:var(--muted);">
-        Password: <strong style="color:var(--primary);">admin2025</strong>
+        Enter your admin or viewer password.
       </p>
     </div>
   </div>
@@ -260,7 +260,7 @@ body { background: var(--bone); }
       <button class="btn-tb" onclick="exportCSV()">
         <i class="bi bi-download me-1"></i>Export CSV
       </button>
-      <button class="btn-tb btn-tb-danger" onclick="clearAllData()">
+      <button class="btn-tb btn-tb-danger admin-only" onclick="clearAllData()">
         <i class="bi bi-trash me-1"></i>Clear Data
       </button>
       <button class="btn-tb btn-tb-warn" onclick="handleLogout()">
