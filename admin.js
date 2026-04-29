@@ -107,7 +107,7 @@ async function renderAdminPanel() {
     statsEl.innerHTML = `
       <div class="col-6 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num">${total}</div><div class="stat-bs-label">Total Guests</div></div></div>
       <div class="col-6 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num" style="color:#c99969;">${brideSide}</div><div class="stat-bs-label">Bride's Side</div></div></div>
-      <div class="col-12 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num" style="color:#6D8A91;">${groomSide}</div><div class="stat-bs-label">Groom's Side</div></div></div>`;
+      <div class="col-12 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num" style="color:#a67c3f;">${groomSide}</div><div class="stat-bs-label">Groom's Side</div></div></div>`;
 
     if (statusEl) statusEl.textContent = `Google Sheets · ${total} guest(s)`;
 

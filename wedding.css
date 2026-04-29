@@ -8,25 +8,25 @@
 :root {
   --bs-body-font-family: 'Questrial', sans-serif;
 
-  /* Demo palette — warm gold accent on cream/white */
-  --primary:        #6D8A91;   /* sage-blue – kept for nav active state */
-  --primary-dark:   #54707a;
-  --gold:           #c99969;   /* the demo's signature warm gold */
-  --gold-light:     #d9b388;
-  --gold-dark:      #a87a4d;
-  --secondary:      #c99969;
-  --secondary-dark: #a87a4d;
-  --secondary-2:    #E8EDE6;
-  --cream:          #faf6f0;
-  --bone:           #f9f6f1;
-  --paper:          #ffffff;
-  --ink:            #2a2a2a;       /* the demo's near-black headings */
-  --body-text:      #6e6e6e;       /* the demo's body copy grey */
-  --muted:          #999999;
-  --soft-brown:     #6e6157;
-  --hairline:       #ece6dc;
-  --success:        #4a7c59;
-  --error:          #dc3545;
+  /* Palette — white, gold & champagne */
+  --primary:        #c9a96e;   /* rich gold — nav active, accents */
+  --primary-dark:   #b08c4a;
+  --gold:           #c9a96e;   /* signature gold */
+  --gold-light:     #ddc493;
+  --gold-dark:      #a67c3f;
+  --secondary:      #c9a96e;
+  --secondary-dark: #a67c3f;
+  --secondary-2:    #f5efe4;   /* soft champagne tint */
+  --cream:          #faf6ef;   /* champagne background */
+  --bone:           #f7f2ea;   /* lighter champagne */
+  --paper:          #ffffff;   /* clean white */
+  --ink:            #2a2a2a;   /* near-black headings */
+  --body-text:      #6e6e6e;   /* body copy grey */
+  --muted:          #a09080;   /* warm muted */
+  --soft-brown:     #8a7762;   /* champagne-brown */
+  --hairline:       #e8dfd2;   /* champagne border */
+  --success:        #8a7440;   /* muted gold-green */
+  --error:          #c45050;
 }
 
 /* ── BASE ── */
@@ -1166,7 +1166,7 @@ a:hover { color: var(--gold-dark); }
 }
 .badge-groom {
   background: rgba(109,138,145,.18);
-  color: #54707a;
+  color: var(--gold-dark);
   font-family: 'PT Serif', serif;
   font-weight: 700;
   font-size: 11px;
