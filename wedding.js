@@ -1,15 +1,13 @@
 /* ══════════════════════════════════════
    Stephen & Mutinta — Wedding RSVP
-   wedding.js
+   wedding.js  |  Google Sheets Backend
 ══════════════════════════════════════ */
 
 'use strict';
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-const DB_STORAGE_KEY  = 'wedding_sm_sqlite_2025';
-
-// ── STATE ────────────────────────────────────────────────────────────────────
-let db = null;
+// ⚠️ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE:
+const API_URL = 'https://script.google.com/macros/s/AKfycbyVl8rRE9XivaIPOjoONLlr6YtSRn91LCJEtx5SBf3JaN32do2DF2KbMC3M1d-roUf1/exec';
 
 // ── MONOGRAM LOGO SVG ────────────────────────────────────────────────────────
 const LOGO_SVG = `<svg class="logo-svg-inline" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
@@ -70,86 +68,34 @@ function injectLogos() {
   });
 }
 
-// ── DATABASE ─────────────────────────────────────────────────────────────────
-async function initDB() {
+// ── API HELPER ──────────────────────────────────────────────────────────────
+async function apiCall(params) {
+  const url = new URL(API_URL);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error('Network error: ' + res.status);
+  return res.json();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+async function initApp() {
   try {
-    const SQL = await initSqlJs({
-      locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
-    });
-
-    const saved = localStorage.getItem(DB_STORAGE_KEY);
-    db = saved
-      ? new SQL.Database(Uint8Array.from(atob(saved), c => c.charCodeAt(0)))
-      : new SQL.Database();
-
-    db.run(`
-      CREATE TABLE IF NOT EXISTS guests (
-        id            INTEGER PRIMARY KEY AUTOINCREMENT,
-        name          TEXT NOT NULL,
-        phone         TEXT NOT NULL UNIQUE,
-        email         TEXT NOT NULL,
-        att1_title    TEXT NOT NULL DEFAULT 'Mr',
-        att1_name     TEXT NOT NULL DEFAULT '',
-        att2_title    TEXT NOT NULL DEFAULT 'Miss',
-        att2_name     TEXT NOT NULL DEFAULT '',
-        events        TEXT NOT NULL DEFAULT 'wedding',
-        relation_side TEXT NOT NULL DEFAULT 'bride',
-        relation_type TEXT NOT NULL DEFAULT 'friend',
-        contribution  TEXT NOT NULL DEFAULT 'money',
-        password      TEXT NOT NULL,
-        registered_at TEXT NOT NULL
-      )
-    `);
-
-    // ── SCHEMA MIGRATION ──────────────────────────────────────────────────────
-    // If the table already existed from an older schema, ALTER TABLE to add any
-    // missing columns non-destructively.
-    const existingCols = db.exec(`PRAGMA table_info(guests)`)[0]?.values
-      .map(row => row[1]) ?? [];
-    const needed = [
-      ["att1_title",    "TEXT NOT NULL DEFAULT 'Mr'"],
-      ["att1_name",     "TEXT NOT NULL DEFAULT ''"],
-      ["att2_title",    "TEXT NOT NULL DEFAULT 'Miss'"],
-      ["att2_name",     "TEXT NOT NULL DEFAULT ''"],
-      ["events",        "TEXT NOT NULL DEFAULT 'wedding'"],
-      ["relation_side", "TEXT NOT NULL DEFAULT 'bride'"],
-      ["relation_type", "TEXT NOT NULL DEFAULT 'friend'"],
-      ["contribution",  "TEXT NOT NULL DEFAULT 'money'"],
-    ];
-    needed.forEach(([col, def]) => {
-      if (!existingCols.includes(col)) {
-        db.run(`ALTER TABLE guests ADD COLUMN ${col} ${def}`);
-      }
-    });
-    // ─────────────────────────────────────────────────────────────────────────
-
-    persistDB();
+    // Quick connectivity check
+    await apiCall({ action: 'count' });
 
     // Hide loading screen
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.add('hidden');
 
-    // Update DB status bar safely
-    const statusEl = document.getElementById('db-status-text');
-    if (statusEl) statusEl.textContent =
-      `SQLite database active · ${queryCount()} guest(s) stored in localStorage`;
-
     injectLogos();
 
   } catch (err) {
-    console.error('initDB failed:', err);
-    const loaderText = document.querySelector('.loader-text');
-    if (loaderText) loaderText.textContent = 'DB Error — ' + err.message;
+    console.error('initApp failed:', err);
+    // Still hide overlay so site is usable
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) overlay.classList.add('hidden');
+    injectLogos();
   }
-}
-
-function persistDB() {
-  if (!db) return;
-  localStorage.setItem(DB_STORAGE_KEY, btoa(String.fromCharCode(...db.export())));
-}
-
-function queryCount() {
-  return db.exec('SELECT COUNT(*) FROM guests')[0]?.values[0][0] ?? 0;
 }
 
 // ── NAVIGATION ───────────────────────────────────────────────────────────────
@@ -200,7 +146,7 @@ function togglePwd(inputId, btn) {
 }
 
 // ── REGISTER ──────────────────────────────────────────────────────────────────
-function handleRegister() {
+async function handleRegister() {
   clearMsg('reg-error');
 
   const phone        = document.getElementById('reg-phone').value.trim();
@@ -218,7 +164,7 @@ function handleRegister() {
   const relationSide = document.querySelector('input[name="relation-side"]:checked')?.value || 'bride';
   const relationType = document.getElementById('reg-relation-type').value || 'friend';
 
-  // ── Validation (phone + email required, valid email format) ──
+  // ── Validation ──
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!phone)                  return showError('reg-error', 'Please enter your phone number.');
   if (!email)                  return showError('reg-error', 'Please enter your email address.');
@@ -226,51 +172,52 @@ function handleRegister() {
   if (!att1Name)               return showError('reg-error', 'Please enter the name of the first attendee.');
   if (!att2Name)               return showError('reg-error', 'Please enter the name of the second attendee.');
 
-  // Derive the contact-person "name" from Attendee 1 (Title + Name)
-  // — used for greetings, emails, admin display.
   const name = `${att1Title} ${att1Name}`.trim();
-
   const normPhone = normalizePhone(phone);
-
-  // ── Prevent duplicate phone numbers ────────────────────────────────────────
-  const existing  = db.exec('SELECT id FROM guests WHERE phone = ?', [normPhone]);
-  if (existing.length && existing[0].values.length)
-    return showError('reg-error', 'This phone number has already reserved a date. Please use a different number, or contact us if you need to update your reservation.');
-
   const password = genPassword();
 
+  // Disable button while submitting
+  const btn = document.querySelector('#rsvp-pane-register .btn-wedding');
+  if (btn) { btn.disabled = true; btn.textContent = 'Reserving...'; }
+
   try {
-    db.run(
-      `INSERT INTO guests
-         (name, phone, email, att1_title, att1_name, att2_title, att2_name,
-          events, relation_side, relation_type, contribution, password, registered_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, normPhone, email, att1Title, att1Name, att2Title, att2Name,
-       events, relationSide, relationType, contribution, password, new Date().toISOString()]
-    );
-    persistDB();
-  } catch (err) {
-    // Catch DB-level UNIQUE constraint violation as a safety net
-    const msg = String(err.message || '');
-    if (/UNIQUE.*phone/i.test(msg)) {
-      return showError('reg-error', 'This phone number has already reserved a date. Please use a different number.');
+    const result = await apiCall({
+      action: 'register',
+      name, phone: normPhone, email,
+      att1_title: att1Title, att1_name: att1Name,
+      att2_title: att2Title, att2_name: att2Name,
+      events, relation_side: relationSide,
+      relation_type: relationType, contribution,
+      password, registered_at: new Date().toISOString()
+    });
+
+    if (!result.success) {
+      if (result.error === 'duplicate_phone') {
+        return showError('reg-error', 'This phone number has already reserved a date. Please use a different number, or contact us if you need to update your reservation.');
+      }
+      return showError('reg-error', 'Reservation failed: ' + result.error);
     }
-    return showError('reg-error', 'Reservation failed: ' + msg);
+
+    ['reg-phone', 'reg-email', 'att1-name', 'att2-name'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+
+    const successPwdEl = document.getElementById('success-pwd');
+    if (successPwdEl) successPwdEl.textContent = password;
+    const emailStatusBox = document.getElementById('email-status-box');
+    if (emailStatusBox) emailStatusBox.innerHTML = '';
+    showPage('page-success');
+
+  } catch (err) {
+    showError('reg-error', 'Connection error. Please check your internet and try again.');
+    console.error('Register error:', err);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Reserve'; }
   }
-
-  ['reg-phone', 'reg-email', 'att1-name', 'att2-name'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-
-  const successPwdEl = document.getElementById('success-pwd');
-  if (successPwdEl) successPwdEl.textContent = password;
-  const emailStatusBox = document.getElementById('email-status-box');
-  if (emailStatusBox) emailStatusBox.innerHTML = '';
-  showPage('page-success');
 }
 
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
-function handleLogin() {
+async function handleLogin() {
   clearMsg('login-error');
 
   const phone = normalizePhone(document.getElementById('login-phone').value.trim());
@@ -279,37 +226,39 @@ function handleLogin() {
   if (!phone) return showError('login-error', 'Please enter your phone number.');
   if (!pwd)   return showError('login-error', 'Please enter your password.');
 
-  const res = db.exec(
-    'SELECT id, name, att1_title, att1_name, att2_title, att2_name FROM guests WHERE phone = ? AND password = ?',
-    [phone, pwd]
-  );
+  try {
+    const result = await apiCall({ action: 'login', phone, password: pwd });
 
-  if (!res.length || !res[0].values.length)
-    return showError('login-error', 'Incorrect phone number or password. Please try again.');
+    if (!result.success) {
+      return showError('login-error', 'Incorrect phone number or password. Please try again.');
+    }
 
-  const [id, name, att1Title, att1Name, att2Title, att2Name] = res[0].values[0];
+    const { name, att1_title, att1_name, att2_title, att2_name } = result.guest;
 
-  // Populate details page
-  document.getElementById('nav-user-name').textContent      = 'Welcome, ' + name.split(' ')[0];
-  document.getElementById('detail-guest-name').textContent  = name;
-  document.getElementById('detail-att1-title').textContent  = att1Title || 'Mr';
-  document.getElementById('detail-att1-name').textContent   = att1Name  || '—';
-  document.getElementById('detail-att2-title').textContent  = att2Title || 'Miss';
-  document.getElementById('detail-att2-name').textContent   = att2Name  || '—';
+    document.getElementById('nav-user-name').textContent      = 'Welcome, ' + name.split(' ')[0];
+    document.getElementById('detail-guest-name').textContent  = name;
+    document.getElementById('detail-att1-title').textContent  = att1_title || 'Mr';
+    document.getElementById('detail-att1-name').textContent   = att1_name  || '—';
+    document.getElementById('detail-att2-title').textContent  = att2_title || 'Miss';
+    document.getElementById('detail-att2-name').textContent   = att2_name  || '—';
 
-  document.getElementById('att1-avatar').textContent = ['Mrs','Miss'].includes(att1Title) ? '👗' : '🤵';
-  document.getElementById('att2-avatar').textContent = ['Mrs','Miss'].includes(att2Title) ? '👗' : '🤵';
+    document.getElementById('att1-avatar').textContent = ['Mrs','Miss'].includes(att1_title) ? '👗' : '🤵';
+    document.getElementById('att2-avatar').textContent = ['Mrs','Miss'].includes(att2_title) ? '👗' : '🤵';
 
-  // Simple "Registered" confirmation badge (used to be money/gift)
-  const badge = document.getElementById('detail-contribution-badge');
-  if (badge) {
-    badge.textContent = '✓ RSVP Confirmed';
-    badge.className   = 'contribution-badge';
+    const badge = document.getElementById('detail-contribution-badge');
+    if (badge) {
+      badge.textContent = '✓ RSVP Confirmed';
+      badge.className   = 'contribution-badge';
+    }
+
+    document.getElementById('login-phone').value    = '';
+    document.getElementById('login-password').value = '';
+    showPage('page-details');
+
+  } catch (err) {
+    showError('login-error', 'Connection error. Please check your internet and try again.');
+    console.error('Login error:', err);
   }
-
-  document.getElementById('login-phone').value    = '';
-  document.getElementById('login-password').value = '';
-  showPage('page-details');
 }
 
 function handleLogout() {
@@ -319,7 +268,7 @@ function handleLogout() {
 // ── PETALS ───────────────────────────────────────────────────────────────────
 function initPetals() {
   const container = document.getElementById('petals');
-  if (!container) return; // nothing to do if the container isn't on the page
+  if (!container) return;
   for (let i = 0; i < 18; i++) {
     const petal = document.createElement('div');
     petal.className = 'petal';
@@ -337,7 +286,7 @@ function initPetals() {
 }
 
 // ── PROGRAMME GATE ───────────────────────────────────────────────────────
-function handleViewProgramme() {
+async function handleViewProgramme() {
   const errorEl = document.getElementById('prog-error');
   errorEl.className = 'msg error';
   errorEl.textContent = '';
@@ -349,17 +298,24 @@ function handleViewProgramme() {
     return;
   }
 
-  const res = db.exec('SELECT name FROM guests WHERE phone = ?', [phone]);
-  if (!res.length || !res[0].values.length) {
-    errorEl.textContent = 'This phone number has not reserved a date. Please reserve first, then come back to view the programme.';
-    errorEl.className = 'msg error show';
-    return;
-  }
+  try {
+    const result = await apiCall({ action: 'checkPhone', phone });
 
-  const name = res[0].values[0][0];
-  document.getElementById('prog-guest-name').textContent = name;
-  document.getElementById('programme-gate').style.display = 'none';
-  document.getElementById('programme-content').style.display = '';
+    if (!result.success) {
+      errorEl.textContent = 'This phone number has not reserved a date. Please reserve first, then come back to view the programme.';
+      errorEl.className = 'msg error show';
+      return;
+    }
+
+    document.getElementById('prog-guest-name').textContent = result.name;
+    document.getElementById('programme-gate').style.display = 'none';
+    document.getElementById('programme-content').style.display = '';
+
+  } catch (err) {
+    errorEl.textContent = 'Connection error. Please check your internet and try again.';
+    errorEl.className = 'msg error show';
+    console.error('Programme check error:', err);
+  }
 }
 
 function handleLockProgramme() {
@@ -378,10 +334,9 @@ document.addEventListener('change', function(e) {
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────
 initPetals();
-initDB();
+initApp();
 
-// Safety net: force-hide the loading overlay after 5s no matter what,
-// so a slow/failed CDN load never permanently blocks the UI.
+// Safety net: force-hide the loading overlay after 5s no matter what
 setTimeout(() => {
   const overlay = document.getElementById('loading-overlay');
   if (overlay && !overlay.classList.contains('hidden')) {

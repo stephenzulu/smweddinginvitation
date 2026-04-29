@@ -1,85 +1,34 @@
 /* ══════════════════════════════════════
    Stephen & Mutinta — Wedding RSVP
-   admin.js  |  Admin Portal Only
+   admin.js  |  Admin Portal — Google Sheets Backend
 ══════════════════════════════════════ */
 'use strict';
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────
-const DB_STORAGE_KEY    = 'wedding_sm_sqlite_2025';
-const ADMIN_PASSWORD    = 'admin2025';
+// ⚠️ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE:
+const API_URL         = 'https://script.google.com/macros/s/AKfycbyVl8rRE9XivaIPOjoONLlr6YtSRn91LCJEtx5SBf3JaN32do2DF2KbMC3M1d-roUf1/exec';
+const ADMIN_PASSWORD  = 'admin2025';
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-let db = null;
+// ── API HELPER ──────────────────────────────────────────────────────────────
+async function apiCall(params) {
+  const url = new URL(API_URL);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error('Network error: ' + res.status);
+  return res.json();
+}
 
-// ── DATABASE ─────────────────────────────────────────────────────────────────
-async function initDB() {
+// ── INIT ─────────────────────────────────────────────────────────────────────
+async function initApp() {
   try {
-    const SQL = await initSqlJs({
-      locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
-    });
-    const saved = localStorage.getItem(DB_STORAGE_KEY);
-    db = saved
-      ? new SQL.Database(Uint8Array.from(atob(saved), c => c.charCodeAt(0)))
-      : new SQL.Database();
-
-    db.run(`CREATE TABLE IF NOT EXISTS guests (
-      id            INTEGER PRIMARY KEY AUTOINCREMENT,
-      name          TEXT NOT NULL,
-      phone         TEXT NOT NULL UNIQUE,
-      email         TEXT NOT NULL,
-      att1_title    TEXT NOT NULL DEFAULT 'Mr',
-      att1_name     TEXT NOT NULL DEFAULT '',
-      att2_title    TEXT NOT NULL DEFAULT 'Miss',
-      att2_name     TEXT NOT NULL DEFAULT '',
-      events        TEXT NOT NULL DEFAULT 'wedding',
-      relation_side TEXT NOT NULL DEFAULT 'bride',
-      relation_type TEXT NOT NULL DEFAULT 'friend',
-      contribution  TEXT NOT NULL DEFAULT 'money',
-      password      TEXT NOT NULL,
-      registered_at TEXT NOT NULL
-    )`);
-
-    // ── SCHEMA MIGRATION ─────────────────────────────────────────────────────
-    const existingCols = db.exec(`PRAGMA table_info(guests)`)[0]?.values
-      .map(row => row[1]) ?? [];
-    const needed = [
-      ["att1_title",    "TEXT NOT NULL DEFAULT 'Mr'"],
-      ["att1_name",     "TEXT NOT NULL DEFAULT ''"],
-      ["att2_title",    "TEXT NOT NULL DEFAULT 'Miss'"],
-      ["att2_name",     "TEXT NOT NULL DEFAULT ''"],
-      ["events",        "TEXT NOT NULL DEFAULT 'wedding'"],
-      ["relation_side", "TEXT NOT NULL DEFAULT 'bride'"],
-      ["relation_type", "TEXT NOT NULL DEFAULT 'friend'"],
-      ["contribution",  "TEXT NOT NULL DEFAULT 'money'"],
-    ];
-    needed.forEach(([col, def]) => {
-      if (!existingCols.includes(col)) db.run(`ALTER TABLE guests ADD COLUMN ${col} ${def}`);
-    });
-    // ─────────────────────────────────────────────────────────────────────────
-
-    // Hide loading overlay
+    await apiCall({ action: 'count' });
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.add('hidden');
-
-    // Update status bar
-    const statusEl = document.getElementById('db-status-text');
-    if (statusEl) statusEl.textContent =
-      `SQLite active · ${queryCount()} guest(s) · localStorage`;
-
   } catch (err) {
-    console.error('initDB failed:', err);
-    const loaderText = document.querySelector('.loader-text');
-    if (loaderText) loaderText.textContent = 'DB Error — ' + err.message;
+    console.error('initApp failed:', err);
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) overlay.classList.add('hidden');
   }
-}
-
-function persistDB() {
-  if (!db) return;
-  localStorage.setItem(DB_STORAGE_KEY, btoa(String.fromCharCode(...db.export())));
-}
-
-function queryCount() {
-  return db.exec('SELECT COUNT(*) FROM guests')[0]?.values[0][0] ?? 0;
 }
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
@@ -118,104 +67,118 @@ function handleAdminLogin() {
 
   document.getElementById('admin-password').value = '';
   showView('view-panel');
-  if (db) {
-    renderAdminPanel();
-  } else {
-    document.getElementById('admin-stats').innerHTML =
-      `<div class="col-12"><div class="stat-bs-card" style="color:#666;">
-        <i class="bi bi-hourglass-split me-2"></i>Database loading — click Refresh in a moment.
-      </div></div>`;
-    document.getElementById('admin-tbody').innerHTML =
-      `<tr><td colspan="9" class="text-center fst-italic py-4" style="color:#444;">Please wait and click Refresh.</td></tr>`;
-  }
+  renderAdminPanel();
 }
 
 // ── RENDER PANEL ─────────────────────────────────────────────────────────────
-function renderAdminPanel() {
-  if (!db) return;
-  const res  = db.exec(
-    'SELECT id,name,phone,email,att1_title,att1_name,att2_title,att2_name,events,relation_side,relation_type,registered_at FROM guests ORDER BY id'
-  );
-  const rows  = res.length ? res[0].values : [];
-  const total = rows.length;
-
-  // Relation-side split (relation_side at index 9)
-  const brideSide = rows.filter(r => r[9] === 'bride').length;
-  const groomSide = rows.filter(r => r[9] === 'groom').length;
-
-  document.getElementById('admin-stats').innerHTML = `
-    <div class="col-6 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num">${total}</div><div class="stat-bs-label">Total Guests</div></div></div>
-    <div class="col-6 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num" style="color:#c99969;">${brideSide}</div><div class="stat-bs-label">Bride's Side</div></div></div>
-    <div class="col-12 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num" style="color:#6D8A91;">${groomSide}</div><div class="stat-bs-label">Groom's Side</div></div></div>`;
-
+async function renderAdminPanel() {
+  const statsEl = document.getElementById('admin-stats');
+  const tbodyEl = document.getElementById('admin-tbody');
   const statusEl = document.getElementById('db-status-text');
-  if (statusEl) statusEl.textContent = `SQLite active · ${total} guest(s) · localStorage`;
 
-  if (!rows.length) {
-    document.getElementById('admin-tbody').innerHTML =
-      `<tr><td colspan="8" class="text-center fst-italic py-4" style="color:#444;">No guests registered yet.</td></tr>`;
-    return;
+  statsEl.innerHTML = `<div class="col-12"><div class="stat-bs-card" style="color:#666;">
+    <i class="bi bi-hourglass-split me-2"></i>Loading data from Google Sheets...
+  </div></div>`;
+
+  try {
+    const result = await apiCall({ action: 'getAll' });
+    if (!result.success) throw new Error(result.error);
+
+    const rows  = result.guests;
+    const total = rows.length;
+
+    const brideSide = rows.filter(r => r.relation_side === 'bride').length;
+    const groomSide = rows.filter(r => r.relation_side === 'groom').length;
+
+    statsEl.innerHTML = `
+      <div class="col-6 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num">${total}</div><div class="stat-bs-label">Total Guests</div></div></div>
+      <div class="col-6 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num" style="color:#c99969;">${brideSide}</div><div class="stat-bs-label">Bride's Side</div></div></div>
+      <div class="col-12 col-md-4"><div class="stat-bs-card"><div class="stat-bs-num" style="color:#6D8A91;">${groomSide}</div><div class="stat-bs-label">Groom's Side</div></div></div>`;
+
+    if (statusEl) statusEl.textContent = `Google Sheets · ${total} guest(s)`;
+
+    if (!rows.length) {
+      tbodyEl.innerHTML =
+        `<tr><td colspan="8" class="text-center fst-italic py-4" style="color:#444;">No guests registered yet.</td></tr>`;
+      return;
+    }
+
+    tbodyEl.innerHTML = rows.map((r, i) => {
+      const d = r.registered_at ? new Date(r.registered_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+      const sideBadge = r.relation_side === 'groom'
+        ? `<span class="badge badge-groom px-2 py-1">🤵 Groom's</span>`
+        : `<span class="badge badge-bride px-2 py-1">👰 Bride's</span>`;
+      const relTypeLabel = (r.relation_type || 'friend').charAt(0).toUpperCase() + (r.relation_type || 'friend').slice(1);
+
+      return `<tr>
+        <td style="color:#555;">${i+1}</td>
+        <td>${esc(r.phone)}</td>
+        <td style="font-size:13px;">${esc(r.email)}</td>
+        <td style="white-space:nowrap;"><span style="color:var(--gold);font-size:11px;">${esc(r.att1_title)}</span> ${esc(r.att1_name)}</td>
+        <td style="white-space:nowrap;"><span style="color:var(--gold);font-size:11px;">${esc(r.att2_title)}</span> ${esc(r.att2_name)}</td>
+        <td style="white-space:nowrap;">${sideBadge}<br><span style="font-size:11px;color:#888;font-style:italic;">${esc(relTypeLabel)}</span></td>
+        <td style="color:#666;font-size:12px;">${d}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-danger"
+            style="font-size:11px;white-space:nowrap;"
+            onclick="deleteGuest('${esc(r.phone)}')">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+
+  } catch (err) {
+    statsEl.innerHTML = `<div class="col-12"><div class="stat-bs-card" style="color:#dc3545;">
+      <i class="bi bi-exclamation-triangle me-2"></i>Failed to load data: ${esc(err.message)}
+    </div></div>`;
+    console.error('renderAdminPanel error:', err);
   }
-
-  document.getElementById('admin-tbody').innerHTML = rows.map((r, i) => {
-    const [id,name,phone,email,a1t,a1n,a2t,a2n,events,relSide,relType,regAt] = r;
-    const d = regAt ? new Date(regAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-
-    // Relation
-    const sideBadge = relSide === 'groom'
-      ? `<span class="badge badge-groom px-2 py-1">🤵 Groom's</span>`
-      : `<span class="badge badge-bride px-2 py-1">👰 Bride's</span>`;
-    const relTypeLabel = (relType || 'friend').charAt(0).toUpperCase() + (relType || 'friend').slice(1);
-
-    return `<tr>
-      <td style="color:#555;">${i+1}</td>
-      <td>${esc(phone)}</td>
-      <td style="font-size:13px;">${esc(email)}</td>
-      <td style="white-space:nowrap;"><span style="color:var(--gold);font-size:11px;">${esc(a1t)}</span> ${esc(a1n)}</td>
-      <td style="white-space:nowrap;"><span style="color:var(--gold);font-size:11px;">${esc(a2t)}</span> ${esc(a2n)}</td>
-      <td style="white-space:nowrap;">${sideBadge}<br><span style="font-size:11px;color:#888;font-style:italic;">${esc(relTypeLabel)}</span></td>
-      <td style="color:#666;font-size:12px;">${d}</td>
-      <td>
-        <button class="btn btn-sm btn-outline-danger"
-          style="font-size:11px;white-space:nowrap;"
-          onclick="deleteGuest(${id}, '${esc(phone)}')">
-          <i class="bi bi-trash"></i>
-        </button>
-      </td>
-    </tr>`;
-  }).join('');
 }
 
 // ── DELETE GUEST ──────────────────────────────────────────────────────────────
-function deleteGuest(guestId, guestPhone) {
-  if (!db) return;
+async function deleteGuest(guestPhone) {
   if (!confirm(`Remove the guest with phone number "${guestPhone}" from the registry?\nThis cannot be undone.`)) return;
-  db.run('DELETE FROM guests WHERE id = ?', [guestId]);
-  persistDB();
-  renderAdminPanel();
+
+  try {
+    await apiCall({ action: 'delete', phone: guestPhone });
+    renderAdminPanel();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
 }
 
 // ── EXPORT CSV ────────────────────────────────────────────────────────────────
-function exportCSV() {
-  if (!db) return alert('Database not ready.');
-  const res = db.exec('SELECT phone,email,att1_title,att1_name,att2_title,att2_name,relation_side,relation_type,registered_at FROM guests ORDER BY id');
-  if (!res.length || !res[0].values.length) return alert('No guests to export.');
-  const headers = ['Phone','Email','Att1 Title','Att1 Name','Att2 Title','Att2 Name','Relation Side','Relation Type','Registered At'];
-  const csv = [headers, ...res[0].values.map(r => r.map(v => `"${String(v).replace(/"/g,'\\"')}"`))]
-    .map(r => r.join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'wedding_guests_sm_2026.csv';
-  a.click();
+async function exportCSV() {
+  try {
+    const result = await apiCall({ action: 'getAll' });
+    if (!result.success || !result.guests.length) return alert('No guests to export.');
+
+    const headers = ['Phone','Email','Att1 Title','Att1 Name','Att2 Title','Att2 Name','Relation Side','Relation Type','Contribution','Registered At'];
+    const csvRows = result.guests.map(r => [
+      r.phone, r.email, r.att1_title, r.att1_name, r.att2_title, r.att2_name,
+      r.relation_side, r.relation_type, r.contribution, r.registered_at
+    ].map(v => `"${String(v || '').replace(/"/g,'\\"')}"`));
+
+    const csv = [headers, ...csvRows].map(r => r.join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'wedding_guests_sm_2026.csv';
+    a.click();
+  } catch (err) {
+    alert('Export failed: ' + err.message);
+  }
 }
 
 // ── CLEAR DATA ────────────────────────────────────────────────────────────────
-function clearAllData() {
-  if (!db) return alert('Database not ready.');
+async function clearAllData() {
   if (!confirm('⚠️ Delete ALL guest records permanently? This cannot be undone.')) return;
-  db.run('DELETE FROM guests');
-  persistDB();
-  renderAdminPanel();
+  try {
+    await apiCall({ action: 'clearAll' });
+    renderAdminPanel();
+  } catch (err) {
+    alert('Clear failed: ' + err.message);
+  }
 }
 
 // ── LOGOUT ────────────────────────────────────────────────────────────────────
@@ -224,7 +187,7 @@ function handleLogout() {
 }
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────
-initDB();
+initApp();
 
 // Safety: force-hide loading overlay after 5s
 setTimeout(() => {
