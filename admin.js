@@ -11,11 +11,15 @@ const ADMIN_PASSWORD  = 'admin2025';
 
 // ── API HELPER ──────────────────────────────────────────────────────────────
 async function apiCall(params) {
-  const url = new URL(API_URL);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error('Network error: ' + res.status);
-  return res.json();
+  const url = API_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url, { redirect: 'follow' });
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.error('API response was not JSON:', text);
+    throw new Error('Invalid response from server');
+  }
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────

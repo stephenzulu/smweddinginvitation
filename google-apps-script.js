@@ -109,7 +109,7 @@ function handleRequest(e) {
         result = { success: false, error: 'Unknown action: ' + action };
     }
   } catch (err) {
-    result = { success: false, error: err.message };
+    result = { success: false, error: String(err.message || err || 'Unknown server error') };
   }
 
   return ContentService
