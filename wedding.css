@@ -187,7 +187,7 @@ a:hover { color: var(--gold-dark); }
 .dahlia-hero {
   position: relative;
   display: flex; align-items: flex-start; justify-content: center;
-  padding: 100px 16px 80px;
+  padding: 78px 16px 80px;
   background-color: #b8a890;
   /* Hosted background image (Unsplash, free for commercial use) — pampas grass / dried florals.
      Light cream overlay keeps the ivory invitation card readable.
