@@ -278,6 +278,12 @@
           <div class="countdown-passed" id="cd-w-passed" style="display:none;">
             <i class="bi bi-suit-heart-fill me-2"></i>Thank you for celebrating with us!
           </div>
+          <p class="font-alt fst-italic mt-3 mb-0" id="rsvp-deadline-notice" style="font-size:13px;color:var(--gold-dark);">
+            <i class="bi bi-exclamation-circle me-1"></i>Last day to reserve: <strong>31<sup>st</sup> July 2026</strong>
+          </p>
+          <p class="font-alt fst-italic mt-2 mb-0" id="rsvp-closed-notice" style="font-size:13.5px;color:#dc3545;display:none;">
+            <i class="bi bi-x-circle me-1"></i>Reservations are now closed.
+          </p>
         </div>
       </div>
 
@@ -756,6 +762,26 @@
   }
 
   paintCountdown(); setInterval(paintCountdown, 1000);
+
+  /* ── RSVP DEADLINE CHECK (closes after 31 July 2026) ── */
+  var RSVP_DEADLINE = new Date('2026-08-01T00:00:00+02:00').getTime(); // midnight after July 31
+
+  function checkRsvpDeadline() {
+    if (Date.now() >= RSVP_DEADLINE) {
+      var reserveBtn = document.querySelector('#rsvp-pane-register .btn-wedding');
+      if (reserveBtn) reserveBtn.style.display = 'none';
+      var deadlineNotice = document.getElementById('rsvp-deadline-notice');
+      if (deadlineNotice) deadlineNotice.style.display = 'none';
+      var closedNotice = document.getElementById('rsvp-closed-notice');
+      if (closedNotice) closedNotice.style.display = '';
+      var regError = document.getElementById('reg-error');
+      if (regError) {
+        regError.textContent = 'Reservations closed on 31st July 2026.';
+        regError.className = 'msg error show';
+      }
+    }
+  }
+  checkRsvpDeadline();
 
   /* ── MOBILE NAV TOGGLE ── */
   window.toggleNav = function(){
