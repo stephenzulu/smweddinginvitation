@@ -35,6 +35,8 @@ function setupSheet() {
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
     sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
   }
+  // Format phone column (C) as plain text to preserve leading zeros
+  sheet.getRange('C:C').setNumberFormat('@');
 }
 
 function getSheet() {
@@ -145,7 +147,11 @@ function doRegister(p) {
     p.registered_at || new Date().toISOString()
   ];
 
-  getSheet().appendRow(row);
+  var sheet = getSheet();
+  var newRow = sheet.getLastRow() + 1;
+  sheet.getRange(newRow, 1, 1, row.length).setValues([row]);
+  // Force phone column (column 3) to plain text so leading zeros are preserved
+  sheet.getRange(newRow, 3).setNumberFormat('@');
   return { success: true, id: id, password: p.password };
 }
 
